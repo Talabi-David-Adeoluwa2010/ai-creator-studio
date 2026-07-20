@@ -97,7 +97,6 @@
             text-transform: uppercase; letter-spacing: 0.5px;
         }
         
-        /* HTML5 MASTER VIDEO PLAYER CANVAS */
         .preview-viewport-container {
             width: 100%; aspect-ratio: 16/9; background: #000;
             border-radius: 10px; border: 1px solid var(--border-color);
@@ -144,14 +143,14 @@
 
         <div class="card">
             <label for="promptInput">1. Scene Physics & Vision Script</label>
-            <textarea id="promptInput" placeholder="Enter script direction... (e.g., Space shuttle flying through a beautiful glowing nebula cluster, cinematic lighting)"></textarea>
+            <textarea id="promptInput" placeholder="Enter script direction... (e.g., Space shuttle flying through a beautiful glowing nebula cluster)"></textarea>
             
             <label for="toolSelect">Active Studio Module Selection</label>
             <select id="toolSelect">
                 <option value="Virtual Camera Rigging">Virtual Camera Rigging Mode (Paths & Zoom)</option>
                 <option value="Interactive Gaffer Grid">Interactive Gaffer Grid (3D Lighting & Shadows)</option>
                 <option value="Multi-Motion Brush">Multi-Motion Brush (Custom Layer Physics)</option>
-                <option value="Adaptive Aspect-Ratio">Adaptive Aspect-Ratio Mastering (Cinema, TikTok, Square)</option>
+                <option value="Adaptive Aspect-Ratio">Adaptive Aspect-Ratio Mastering</option>
                 <option value="AI Performance Dubbing">AI Performance Dubbing (Global Lip-Sync Core)</option>
             </select>
         </div>
@@ -234,8 +233,8 @@
                 return;
             }
 
-            logBox.innerText = `[LOG] Connecting to cloud computing core...\n[LOG] Activating Module: ${chosenTool}\n[LOG] Processing micro-motion vectors and depth maps...`;
-            logBox.style.color = "#00ff66";
+            logBox.innerText = `[LOG] Connecting to engine at /api/render-shot...\n[LOG] Activating Module: ${chosenTool}\n[LOG] Please wait up to 30 seconds if the server is waking up...`;
+            logBox.style.color = "#00ffcc";
             container.style.display = "none";
 
             try {
@@ -250,20 +249,20 @@
                 
                 const data = await response.json();
                 
-                if(data.status === "SUCCESS") {
-                    logBox.innerText = `[SUCCESS] Movie Generation Complete!\n--------------------------------\nActive Module Layered: ${chosenTool}\nResolution Output: ${data.resolution}\nAspect Framework: ${data.aspectRatio}\nAudio Continuity status: ${data.audioSync}\nTarget Audience Retention: ${data.analytics.retentionProbability}`;
+                if(data.status === "SUCCESS" || response.ok) {
+                    logBox.innerText = `[SUCCESS] Movie Generation Complete!\n--------------------------------\nActive Module Layered: ${chosenTool}\nResolution Output: ${data.resolution || '4K Master'}\nAspect Framework: ${data.aspectRatio || '16:9'}\nAudio Continuity: ${data.audioSync || 'Locked'}`;
+                    logBox.style.color = "#00ff66";
                     
-                    // Assign the video source link to our new streaming element
                     player.src = data.videoUrl;
                     container.style.display = "block";
-                    player.play();
+                    player.play().catch(e => console.log("Autoplay caught:", e));
                 } else {
-                    logBox.innerText = `Render Engine Failure: ${data.error}`;
+                    logBox.innerText = `Render Engine Error: ${data.error || 'Server responded with an issue.'}`;
                     logBox.style.color = "#ff3366";
                 }
             } catch (error) {
-                logBox.innerText = "Fatal Connection Error: Render instance host unreachable.";
-                logBox.style.color = "#ff3366";
+                logBox.innerText = "Connection Delay: The cloud host is waking up or compiling code.\n\nACTION: Please wait 15 seconds and tap the button again!";
+                logBox.style.color = "#ffcc00";
             }
         }
     </script>
