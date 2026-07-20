@@ -226,6 +226,9 @@
                 return;
             }
 
+            // Prime video playback instantly upon initial user interaction
+            player.play().catch(() => {});
+
             logBox.innerText = `[LOG] Transmitting parameters to core node...\n[LOG] Activating Module: ${chosenTool}\n[LOG] Compiling render sequence matrices...`;
             logBox.style.color = "#00ffcc";
 
@@ -250,9 +253,9 @@
                     
                     setTimeout(() => {
                         player.play().catch(e => {
-                            console.log("Autoplay caught safely.");
+                            console.log("Autoplay handled safely.");
                         });
-                    }, 500);
+                    }, 300);
 
                 } else {
                     logBox.innerText = `Render Engine Error: ${data.error}`;
