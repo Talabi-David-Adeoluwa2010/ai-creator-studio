@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Creator Studio Console</title>
+    <style>
+        body {
+            background-color: #0d0e12;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #00ffcc;
+            margin-bottom: 5px;
+        }
+        .header p {
+            color: #7a7e85;
+            margin: 0;
+            font-size: 14px;
+        }
+        .card {
+            background: #161920;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #242936;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #b3b8c2;
+            font-size: 14px;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            background: #0d0e12;
+            border: 1px solid #242936;
+            border-radius: 8px;
+            color: white;
+            padding: 12px;
+            box-sizing: border-box;
+            font-size: 15px;
+            resize: none;
+            margin-bottom: 15px;
+        }
+        button {
+            width: 100%;
+            background: linear-gradient(135deg, #00ffcc 0%, #0077ff 100%);
+            border: none;
+            color: black;
+            font-weight: 700;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        button:active {
+            opacity: 0.8;
+        }
+        #outputLog {
+            background: #050608;
+            border: 1px solid #1c202b;
+            font-family: monospace;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #00ff66;
+            min-height: 60px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>OmniStudio Engine</h1>
+        <p>Award-Winning AI Cinema Pipeline</p>
+    </div>
+
+    <div class="card">
+        <label for="promptInput">Director's Script & Vision Prompt</label>
+        <textarea id="promptInput" placeholder="Describe the cinematic scene in detail... e.g., A wide angle tracking shot of a futuristic metropolis under neon rain..."></textarea>
+        
+        <button onclick="dispatchRenderJob()">RENDER CINEMATIC SHOT</button>
+    </div>
+
+    <div class="card">
+        <label>System Live Engine Output</label>
+        <div id="outputLog">System Idle. Awaiting Director Input...</div>
+    </div>
+
+    <script>
+        async function dispatchRenderJob() {
+            const promptText = document.getElementById('promptInput').value;
+            const logBox = document.getElementById('outputLog');
+            
+            if(!promptText) {
+                logBox.innerText = "Error: Prompt cannot be empty.";
+                logBox.style.color = "#ff3366";
+                return;
+            }
+
+            logBox.innerText = "Transmitting vision parameters to Render core...\n";
+            logBox.style.color = "#00ff66";
+
+            try {
+                const response = await fetch('/api/render-shot', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        scriptPrompt: promptText,
+                        characterId: "default-vector",
+                        cameraPath: "linear-tracking-01"
+                    })
+                });
+                
+                const data = await response.json();
+                logBox.innerText += `Status: ${response.status}\nServer Response: ${data.message}\nEstimated Delivery: ${data.estimated_time}`;
+            } catch (error) {
+                logBox.innerText = "Connection Failed. Check server engine status.";
+                logBox.style.color = "#ff3366";
+            }
+        }
+    </script>
+</body>
+</html>
