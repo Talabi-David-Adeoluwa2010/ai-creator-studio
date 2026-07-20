@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OmniStudio Engine - Professional Workspace</title>
+    <title>OmniStudio Engine - Production Desk</title>
     <style>
         :root {
             --bg-dark: #07080b;
@@ -20,91 +20,98 @@
             font-family: -apple-system, BlinkMacSystemFont, sans-serif;
             overflow-x: hidden;
         }
-
-        /* DYNAMIC FLOATING BACKGROUND EMOJIS */
         .emoji-bg {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 1; pointer-events: none; overflow: hidden;
         }
         .floating-emoji {
-            position: absolute; font-size: 24px; opacity: 0.15;
-            animation: floatUp 12s infinite linear;
+            position: absolute; font-size: 24px; opacity: 0.12;
+            animation: floatUp 14s infinite linear;
         }
         @keyframes floatUp {
             0% { transform: translateY(105vh) rotate(0deg); opacity: 0; }
-            10% { opacity: 0.25; }
-            90% { opacity: 0.25; }
+            10% { opacity: 0.2; }
+            90% { opacity: 0.2; }
             100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
         }
-
-        /* 1. CINEMATIC LOADING SPLASH PAGE */
         #splashScreen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: radial-gradient(circle at center, #11141c 0%, #07080b 100%);
             z-index: 999; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; transition: opacity 0.8s ease;
+            justify-content: center; align-items: center; transition: opacity 0.6s ease;
         }
         .splash-title {
-            font-size: 32px; font-weight: 800;
+            font-size: 34px; font-weight: 800;
             background: linear-gradient(135deg, var(--accent) 0%, var(--accent-blue) 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            margin-bottom: 10px; letter-spacing: 2px;
+            margin-bottom: 10px; letter-spacing: 3px;
         }
-        .splash-tag { color: #6f7685; font-size: 14px; margin-bottom: 30px; }
+        .splash-tag { color: #6f7685; font-size: 13px; margin-bottom: 30px; }
         .spinner {
-            width: 40px; height: 40px; border: 3px solid #1a2233;
+            width: 35px; height: 35px; border: 3px solid #1a2233;
             border-top: 3px solid var(--accent); border-radius: 50%;
-            animation: spin 1s infinite linear;
+            animation: spin 0.8s infinite linear;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* 2. CORE STUDIO DASHBOARD CONTENT */
+        
         .studio-container {
-            position: relative; z-index: 5; max-width: 500px;
-            margin: 0 auto; padding: 25px 15px 40px 15px; box-sizing: border-box;
+            position: relative; z-index: 5; max-width: 550px;
+            margin: 0 auto; padding: 20px 15px 50px 15px; box-sizing: border-box;
         }
         .studio-header { text-align: center; margin-bottom: 25px; }
-        .studio-header h1 {
-            font-size: 26px; font-weight: 800; color: var(--accent); margin: 0;
-        }
+        .studio-header h1 { font-size: 28px; font-weight: 850; color: var(--accent); margin: 0; }
         .studio-header p { color: #6f7685; margin: 5px 0 0 0; font-size: 13px; }
         
         .card {
             background: var(--panel-bg); border: 1px solid var(--border-color);
-            border-radius: 16px; padding: 20px; margin-bottom: 20px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            border-radius: 16px; padding: 20px; margin-bottom: 25px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
         }
         label {
-            display: block; font-weight: 600; font-size: 13px;
-            color: #949eb3; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;
+            display: block; font-weight: 700; font-size: 12px;
+            color: #949eb3; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;
         }
         textarea {
-            width: 100%; height: 95px; background: #07080b;
+            width: 100%; height: 100px; background: #07080b;
             border: 1px solid var(--border-color); border-radius: 10px;
             color: white; padding: 12px; box-sizing: border-box;
             font-size: 14px; resize: none; margin-bottom: 5px;
         }
-
-        /* 2GB MAX HIGH-CAPACITY IMPORT ZONE */
         .import-zone {
             border: 2px dashed #2e384d; border-radius: 12px;
-            padding: 20px; text-align: center; background: #0a0d14;
-            cursor: pointer; transition: border-color 0.3s;
+            padding: 22px; text-align: center; background: #0a0d14;
+            cursor: pointer;
         }
-        .import-zone:active { border-color: var(--accent); }
-        .import-icon { font-size: 28px; margin-bottom: 8px; }
+        .import-icon { font-size: 30px; margin-bottom: 8px; }
         .import-text { font-size: 13px; color: #949eb3; }
         .import-limit { font-size: 11px; color: #525a6c; margin-top: 4px; }
         
         button {
             width: 100%; background: linear-gradient(135deg, var(--accent) 0%, var(--accent-blue) 100%);
-            border: none; color: #000000; font-weight: 700; padding: 15px;
+            border: none; color: #000000; font-weight: 800; padding: 16px;
             border-radius: 10px; font-size: 15px; cursor: pointer; margin-top: 15px;
+            text-transform: uppercase; letter-spacing: 0.5px;
         }
+        
+        /* OUTPUT VIEWPORT PLAYER */
+        .preview-viewport {
+            width: 100%; aspect-ratio: 16/9; background: #000;
+            border-radius: 10px; border: 1px solid var(--border-color);
+            margin-top: 15px; display: none; background-size: cover;
+            background-position: center; position: relative;
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.8);
+        }
+        .viewport-badge {
+            position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.75);
+            padding: 4px 8px; border-radius: 4px; border: 1px solid var(--accent);
+            color: var(--accent); font-size: 11px; font-family: monospace;
+        }
+        
         #outputLog {
             background: #030406; border: 1px solid #141822;
             font-family: monospace; padding: 15px; border-radius: 10px;
-            font-size: 13px; color: #00ff66; min-height: 50px; white-space: pre-wrap;
+            font-size: 13px; color: #00ff66; min-height: 60px; white-space: pre-wrap;
+            line-height: 1.5;
         }
     </style>
 </head>
@@ -114,92 +121,95 @@
 
     <div id="splashScreen">
         <div class="splash-title">OMNISTUDIO</div>
-        <div class="splash-tag">Initializing Hyper-Realistic Production Assets...</div>
+        <div class="splash-tag">Mounting Multi-Track AI Infrastructure Clusters...</div>
         <div class="spinner"></div>
     </div>
 
     <div class="studio-container">
         <div class="studio-header">
-            <h1>OmniStudio Engine</h1>
-            <p>Hollywood Production Environment</p>
+            <h1>OmniStudio Console</h1>
+            <p>Enterprise Production & Mastery Suite</p>
         </div>
 
         <div class="card">
             <label for="promptInput">1. Scene Physics & Vision Script</label>
-            <textarea id="promptInput" placeholder="Enter cinematic description or active script nodes..."></textarea>
+            <textarea id="promptInput" placeholder="Enter script direction... (e.g., A pencil sketch drawing of an old wooden house in the mountains, high details)"></textarea>
         </div>
 
         <div class="card">
-            <label>2. High-Capacity Asset Ingestion (Max 2GB)</label>
+            <label>2. Asset Ingestion Ecosystem (Max 2GB)</label>
             <div class="import-zone" onclick="document.getElementById('fileEngine').click()">
-                <div class="import-icon">📁</div>
-                <div class="import-text" id="uploadStatus">Tap to import scripts, NeRF assets, or imagery references</div>
-                <div class="import-limit">Secure 2,000MB Processing Buffer Limit Enabled</div>
+                <div class="import-icon">🗂️</div>
+                <div class="import-text" id="uploadStatus">Tap to ingest image arrays, script references, or NeRF maps</div>
+                <div class="import-limit">Secure 2GB System Ingestion Channel Engaged</div>
             </div>
             <input type="file" id="fileEngine" style="display: none;" onchange="handleAssetUpload(this)">
-            <button onclick="dispatchRenderJob()">EXECUTE CINEMATIC RENDER</button>
+            <button onclick="dispatchRenderJob()">EXECUTE MASTER CINEMATIC RENDER</button>
+            
+            <div class="preview-viewport" id="videoPreview">
+                <div class="viewport-badge">LIVE 4K UP-SCALED PLAYBACK BUFFER</div>
+            </div>
         </div>
 
         <div class="card">
-            <label>System Live Engine Pipeline Output</label>
-            <div id="outputLog">System Active. Awaiting production parameters...</div>
+            <label>Real-Time Engine Telemetry Output</label>
+            <div id="outputLog">System Standby. Awaiting director parameters...</div>
         </div>
     </div>
 
     <script>
-        // TRIGGER LANDING PAGE TIME-OUT LOGIC
         window.addEventListener('DOMContentLoaded', () => {
             generateFloatingAssets();
             setTimeout(() => {
                 const splash = document.getElementById('splashScreen');
                 splash.style.opacity = '0';
-                setTimeout(() => splash.style.display = 'none', 800);
-            }, 2500); // Dynamic load duration
+                setTimeout(() => splash.style.display = 'none', 600);
+            }, 1800);
         });
 
-        // INJECT QUANTUM FLOATING EMOJIS IN BACKGROUND BLOCK
         function generateFloatingAssets() {
             const layer = document.getElementById('emojiLayer');
-            const emojis = ['📝', '✒️', '🎬', '🎥', '🎨', '📚', '🎭', '🔮', '📐'];
-            for(let i = 0; i < 35; i++) {
+            const emojis = ['📝', '🎬', '🎥', '🎨', '🎭', '📐', '✒️', '📚'];
+            for(let i = 0; i < 30; i++) {
                 let span = document.createElement('span');
                 span.className = 'floating-emoji';
                 span.innerText = emojis[Math.floor(Math.random() * emojis.length)];
                 span.style.left = Math.random() * 100 + 'vw';
-                span.style.animationDelay = (Math.random() * 12) + 's';
-                span.style.fontSize = (Math.random() * 18 + 14) + 'px';
+                span.style.animationDelay = (Math.random() * 14) + 's';
+                span.style.fontSize = (Math.random() * 16 + 14) + 'px';
                 layer.appendChild(span);
             }
         }
 
-        // CONTROL HIGH-VOLUME FILE SIZE CONTROLS (2GB ENFORCEMENT)
         function handleAssetUpload(input) {
             const file = input.files[0];
             const statusLabel = document.getElementById('uploadStatus');
             if(!file) return;
 
-            const MAX_SIZE_BYTES = 2 * 1024 * 1024 * 1024; // Precision 2GB Threshold
+            const MAX_SIZE_BYTES = 2 * 1024 * 1024 * 1024; 
             if(file.size > MAX_SIZE_BYTES) {
-                alert("Core System Overflow Error: Ingested file asset size exceeds the premium 2GB limit.");
+                alert("Buffer Overflow: Ingested file asset size exceeds the premium 2GB limit.");
                 input.value = "";
                 return;
             }
-            statusLabel.innerText = `Asset Loaded: ${file.name} (${(file.size / (1024*1024)).toFixed(1)} MB)`;
+            statusLabel.innerText = `Ingested: ${file.name} (${(file.size / (1024*1024)).toFixed(1)} MB)`;
             statusLabel.style.color = "#00ffcc";
         }
 
         async function dispatchRenderJob() {
             const promptText = document.getElementById('promptInput').value;
             const logBox = document.getElementById('outputLog');
+            const previewViewport = document.getElementById('videoPreview');
             
             if(!promptText) {
-                logBox.innerText = "Error: Prompt cannot be empty.";
+                logBox.innerText = "Execution Denied: Scene prompt parameters cannot be null.";
                 logBox.style.color = "#ff3366";
                 return;
             }
 
-            logBox.innerText = "Transmitting parameters to production pipeline nodes...\n";
+            logBox.innerText = "Connecting to cloud computing core...\nDeploying multi-track render nodes...\nProcessing micro-motion vectors and depth maps...";
             logBox.style.color = "#00ff66";
+            previewViewport.style.display = "none";
 
             try {
                 const response = await fetch('/api/render-shot', {
@@ -209,9 +219,19 @@
                 });
                 
                 const data = await response.json();
-                logBox.innerText += `Status: ${response.status}\nServer Pipeline Response: ${data.message}\nEstimated Processing Delivery: ${data.estimated_time}`;
+                
+                if(data.status === "SUCCESS") {
+                    logBox.innerText = `[SUCCESS] Render Complete!\n--------------------------------\nResolution: ${data.resolution}\nAspect Framework: ${data.aspectRatio}\nAudio Continuity: ${data.audioSync}\nTarget Audience Retention: ${data.analytics.retentionProbability}`;
+                    
+                    // Display the image/video frame directly inside our premium player canvas
+                    previewViewport.style.backgroundImage = `url('${data.videoUrl}')`;
+                    previewViewport.style.display = "block";
+                } else {
+                    logBox.innerText = `Render Engine Failure: ${data.error}`;
+                    logBox.style.color = "#ff3366";
+                }
             } catch (error) {
-                logBox.innerText = "Connection Failed. Check server node telemetry.";
+                logBox.innerText = "Fatal Connection Error: Render instance host unreachable.";
                 logBox.style.color = "#ff3366";
             }
         }
