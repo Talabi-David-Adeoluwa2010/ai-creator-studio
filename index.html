@@ -29,7 +29,7 @@
             animation: floatUp 14s infinite linear;
         }
         @keyframes floatUp {
-            0 { transform: translateY(105vh) rotate(0deg); opacity: 0; }
+            0% { transform: translateY(105vh) rotate(0deg); opacity: 0; }
             10% { opacity: 0.2; }
             90% { opacity: 0.2; }
             100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
@@ -97,7 +97,6 @@
             text-transform: uppercase; letter-spacing: 0.5px;
         }
         
-        /* FIX: Render visible from load so mobile hardware detects native instantiation */
         .preview-viewport-container {
             width: 100%; aspect-ratio: 16/9; background: #020305;
             border-radius: 10px; border: 1px solid var(--border-color);
@@ -227,9 +226,6 @@
                 return;
             }
 
-            // CRITICAL FIX: Prime the video player element immediately on user touch click interaction
-            player.play().catch(() => {}); 
-
             logBox.innerText = `[LOG] Transmitting parameters to core node...\n[LOG] Activating Module: ${chosenTool}\n[LOG] Compiling render sequence matrices...`;
             logBox.style.color = "#00ffcc";
 
@@ -249,16 +245,14 @@
                     logBox.innerText = `[SUCCESS] Movie Generation Complete!\n--------------------------------\nActive Module: ${chosenTool}\nResolution: ${data.resolution}\nAspect Framework: ${data.aspectRatio}`;
                     logBox.style.color = "#00ff66";
                     
-                    // Update source directly
                     player.src = data.videoUrl;
                     player.load();
                     
-                    // Secondary call now works because the engine was primed on button click
                     setTimeout(() => {
                         player.play().catch(e => {
-                            logBox.innerText += "\n\n[NOTICE] Press the big Play icon directly inside the video stream container above to watch your generation loop!";
+                            console.log("Autoplay caught safely.");
                         });
-                    }, 1500);
+                    }, 500);
 
                 } else {
                     logBox.innerText = `Render Engine Error: ${data.error}`;
