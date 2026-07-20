@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OmniStudio Engine - Production Desk</title>
+    <title>OmniStudio Master Workspace</title>
     <style>
         :root {
             --bg-dark: #07080b;
@@ -56,7 +56,7 @@
         
         .studio-container {
             position: relative; z-index: 5; max-width: 550px;
-            margin: 0 auto; padding: 20px 15px 50px 15px; box-sizing: border-box;
+            margin: 0 auto; padding: 20px 15px 90px 15px; box-sizing: border-box;
         }
         .studio-header { text-align: center; margin-bottom: 25px; }
         .studio-header h1 { font-size: 28px; font-weight: 850; color: var(--accent); margin: 0; }
@@ -68,51 +68,61 @@
             box-shadow: 0 8px 32px rgba(0,0,0,0.5);
         }
         label {
-            display: block; font-weight: 700; font-size: 12px;
+            display: block; font-weight: 700; font-size: 11px;
             color: #949eb3; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;
         }
         textarea {
-            width: 100%; height: 100px; background: #07080b;
+            width: 100%; height: 90px; background: #07080b;
             border: 1px solid var(--border-color); border-radius: 10px;
             color: white; padding: 12px; box-sizing: border-box;
             font-size: 14px; resize: none; margin-bottom: 5px;
         }
+        select {
+            width: 100%; background: #07080b; border: 1px solid var(--border-color);
+            color: white; padding: 12px; border-radius: 10px; font-size: 14px;
+            margin-bottom: 15px; outline: none;
+        }
         .import-zone {
             border: 2px dashed #2e384d; border-radius: 12px;
-            padding: 22px; text-align: center; background: #0a0d14;
+            padding: 20px; text-align: center; background: #0a0d14;
             cursor: pointer;
         }
-        .import-icon { font-size: 30px; margin-bottom: 8px; }
+        .import-icon { font-size: 26px; margin-bottom: 6px; }
         .import-text { font-size: 13px; color: #949eb3; }
-        .import-limit { font-size: 11px; color: #525a6c; margin-top: 4px; }
         
         button {
             width: 100%; background: linear-gradient(135deg, var(--accent) 0%, var(--accent-blue) 100%);
             border: none; color: #000000; font-weight: 800; padding: 16px;
-            border-radius: 10px; font-size: 15px; cursor: pointer; margin-top: 15px;
+            border-radius: 10px; font-size: 15px; cursor: pointer; margin-top: 10px;
             text-transform: uppercase; letter-spacing: 0.5px;
         }
         
-        /* OUTPUT VIEWPORT PLAYER */
-        .preview-viewport {
+        /* HTML5 MASTER VIDEO PLAYER CANVAS */
+        .preview-viewport-container {
             width: 100%; aspect-ratio: 16/9; background: #000;
             border-radius: 10px; border: 1px solid var(--border-color);
-            margin-top: 15px; display: none; background-size: cover;
-            background-position: center; position: relative;
-            box-shadow: inset 0 0 40px rgba(0,0,0,0.8);
+            margin-top: 15px; display: none; overflow: hidden; position: relative;
         }
+        video { width: 100%; height: 100%; object-fit: cover; }
         .viewport-badge {
-            position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.75);
+            position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.8);
             padding: 4px 8px; border-radius: 4px; border: 1px solid var(--accent);
-            color: var(--accent); font-size: 11px; font-family: monospace;
+            color: var(--accent); font-size: 11px; font-family: monospace; z-index: 10;
         }
         
         #outputLog {
             background: #030406; border: 1px solid #141822;
             font-family: monospace; padding: 15px; border-radius: 10px;
             font-size: 13px; color: #00ff66; min-height: 60px; white-space: pre-wrap;
-            line-height: 1.5;
         }
+        .founder-credit-badge {
+            position: fixed; bottom: 20px; left: 20px;
+            background: rgba(17, 20, 28, 0.9); border: 1px solid var(--border-color);
+            padding: 10px 16px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            z-index: 100; font-size: 12px; backdrop-filter: blur(5px);
+        }
+        .founder-title { color: #6f7685; font-size: 9px; text-transform: uppercase; font-weight: 700; }
+        .founder-name { color: var(--accent); font-weight: 700; }
     </style>
 </head>
 <body>
@@ -122,6 +132,7 @@
     <div id="splashScreen">
         <div class="splash-title">OMNISTUDIO</div>
         <div class="splash-tag">Mounting Multi-Track AI Infrastructure Clusters...</div>
+        <div style="color: #00ffcc; font-size: 11px; margin-bottom: 20px; font-weight: 600; letter-spacing: 1px;">FOUNDER: TALABI DAVID ADEOLUWA</div>
         <div class="spinner"></div>
     </div>
 
@@ -133,7 +144,16 @@
 
         <div class="card">
             <label for="promptInput">1. Scene Physics & Vision Script</label>
-            <textarea id="promptInput" placeholder="Enter script direction... (e.g., A pencil sketch drawing of an old wooden house in the mountains, high details)"></textarea>
+            <textarea id="promptInput" placeholder="Enter script direction... (e.g., Space shuttle flying through a beautiful glowing nebula cluster, cinematic lighting)"></textarea>
+            
+            <label for="toolSelect">Active Studio Module Selection</label>
+            <select id="toolSelect">
+                <option value="Virtual Camera Rigging">Virtual Camera Rigging Mode (Paths & Zoom)</option>
+                <option value="Interactive Gaffer Grid">Interactive Gaffer Grid (3D Lighting & Shadows)</option>
+                <option value="Multi-Motion Brush">Multi-Motion Brush (Custom Layer Physics)</option>
+                <option value="Adaptive Aspect-Ratio">Adaptive Aspect-Ratio Mastering (Cinema, TikTok, Square)</option>
+                <option value="AI Performance Dubbing">AI Performance Dubbing (Global Lip-Sync Core)</option>
+            </select>
         </div>
 
         <div class="card">
@@ -141,13 +161,13 @@
             <div class="import-zone" onclick="document.getElementById('fileEngine').click()">
                 <div class="import-icon">🗂️</div>
                 <div class="import-text" id="uploadStatus">Tap to ingest image arrays, script references, or NeRF maps</div>
-                <div class="import-limit">Secure 2GB System Ingestion Channel Engaged</div>
             </div>
             <input type="file" id="fileEngine" style="display: none;" onchange="handleAssetUpload(this)">
             <button onclick="dispatchRenderJob()">EXECUTE MASTER CINEMATIC RENDER</button>
             
-            <div class="preview-viewport" id="videoPreview">
-                <div class="viewport-badge">LIVE 4K UP-SCALED PLAYBACK BUFFER</div>
+            <div class="preview-viewport-container" id="videoViewportContainer">
+                <div class="viewport-badge">LIVE 4K MOVIE STREAM LAYER</div>
+                <video id="studioVideoPlayer" controls autoplay loop muted playsinline></video>
             </div>
         </div>
 
@@ -157,6 +177,11 @@
         </div>
     </div>
 
+    <div class="founder-credit-badge">
+        <div class="founder-title">Producer / Founder</div>
+        <div class="founder-name">Talabi David Adeoluwa</div>
+    </div>
+
     <script>
         window.addEventListener('DOMContentLoaded', () => {
             generateFloatingAssets();
@@ -164,7 +189,7 @@
                 const splash = document.getElementById('splashScreen');
                 splash.style.opacity = '0';
                 setTimeout(() => splash.style.display = 'none', 600);
-            }, 1800);
+            }, 1500);
         });
 
         function generateFloatingAssets() {
@@ -198,8 +223,10 @@
 
         async function dispatchRenderJob() {
             const promptText = document.getElementById('promptInput').value;
+            const chosenTool = document.getElementById('toolSelect').value;
             const logBox = document.getElementById('outputLog');
-            const previewViewport = document.getElementById('videoPreview');
+            const container = document.getElementById('videoViewportContainer');
+            const player = document.getElementById('studioVideoPlayer');
             
             if(!promptText) {
                 logBox.innerText = "Execution Denied: Scene prompt parameters cannot be null.";
@@ -207,25 +234,29 @@
                 return;
             }
 
-            logBox.innerText = "Connecting to cloud computing core...\nDeploying multi-track render nodes...\nProcessing micro-motion vectors and depth maps...";
+            logBox.innerText = `[LOG] Connecting to cloud computing core...\n[LOG] Activating Module: ${chosenTool}\n[LOG] Processing micro-motion vectors and depth maps...`;
             logBox.style.color = "#00ff66";
-            previewViewport.style.display = "none";
+            container.style.display = "none";
 
             try {
                 const response = await fetch('/api/render-shot', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ scriptPrompt: promptText })
+                    body: JSON.stringify({ 
+                        scriptPrompt: promptText,
+                        activeTool: chosenTool 
+                    })
                 });
                 
                 const data = await response.json();
                 
                 if(data.status === "SUCCESS") {
-                    logBox.innerText = `[SUCCESS] Render Complete!\n--------------------------------\nResolution: ${data.resolution}\nAspect Framework: ${data.aspectRatio}\nAudio Continuity: ${data.audioSync}\nTarget Audience Retention: ${data.analytics.retentionProbability}`;
+                    logBox.innerText = `[SUCCESS] Movie Generation Complete!\n--------------------------------\nActive Module Layered: ${chosenTool}\nResolution Output: ${data.resolution}\nAspect Framework: ${data.aspectRatio}\nAudio Continuity status: ${data.audioSync}\nTarget Audience Retention: ${data.analytics.retentionProbability}`;
                     
-                    // Display the image/video frame directly inside our premium player canvas
-                    previewViewport.style.backgroundImage = `url('${data.videoUrl}')`;
-                    previewViewport.style.display = "block";
+                    // Assign the video source link to our new streaming element
+                    player.src = data.videoUrl;
+                    container.style.display = "block";
+                    player.play();
                 } else {
                     logBox.innerText = `Render Engine Failure: ${data.error}`;
                     logBox.style.color = "#ff3366";
