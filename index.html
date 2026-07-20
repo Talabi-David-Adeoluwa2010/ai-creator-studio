@@ -98,26 +98,35 @@
             -webkit-tap-highlight-color: transparent;
         }
         
+        /* FIXED WRAPPER CONTAINER: Removed strict height capping to make action elements visible */
         .preview-viewport-container {
-            width: 100%; aspect-ratio: 16/9; background: #020305;
-            border-radius: 10px; border: 1px solid var(--border-color);
-            margin-top: 15px; display: none; overflow: hidden; position: relative;
+            width: 100%; background: #020305;
+            border-radius: 12px; border: 1px solid var(--border-color);
+            margin-top: 20px; display: none; padding: 10px; box-sizing: border-box;
+            position: relative;
         }
-        video { width: 100%; height: 100%; object-fit: cover; background: #000000; display: block; }
+        .video-box {
+            width: 100%; aspect-ratio: 16/9; background: #000000;
+            border-radius: 8px; overflow: hidden; margin-bottom: 12px;
+        }
+        video { width: 100%; height: 100%; object-fit: contain; background: #000000; display: block; }
+        
         .viewport-badge {
-            position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.8);
+            position: absolute; top: 18px; left: 18px; background: rgba(0,0,0,0.8);
             padding: 4px 8px; border-radius: 4px; border: 1px solid var(--accent);
             color: var(--accent); font-size: 11px; font-family: monospace; z-index: 10;
             pointer-events: none;
         }
         
+        /* ACTION TRAYS: Visible directly beneath the player view */
         .action-tray {
-            display: flex; gap: 10px; margin-top: 15px;
+            display: flex; gap: 10px; width: 100%; box-sizing: border-box;
         }
         .btn-secondary {
             flex: 1; background: #1a2233; border: 1px solid var(--border-color);
-            color: #ffffff; padding: 12px; border-radius: 8px; font-weight: 600;
+            color: #ffffff; padding: 14px 10px; border-radius: 8px; font-weight: 700;
             font-size: 13px; text-align: center; cursor: pointer; text-decoration: none;
+            display: inline-flex; align-items: center; justify-content: center; gap: 6px;
         }
 
         #outputLog {
@@ -178,10 +187,12 @@
             
             <div class="preview-viewport-container" id="videoViewportContainer">
                 <div class="viewport-badge">GENERATED AI MOVIE</div>
-                <div id="videoContainer"></div>
+                
+                <div class="video-box" id="videoContainer">
+                    </div>
                 
                 <div class="action-tray">
-                    <a id="downloadLink" class="btn-secondary" download="ai-movie.mp4" target="_blank">📥 Save Video</a>
+                    <a id="downloadLink" class="btn-secondary" download="ai-movie.mp4" target="_blank">📥 Download Video</a>
                     <div id="shareBtn" class="btn-secondary" onclick="shareMovieFile()">🔗 Share Movie</div>
                 </div>
             </div>
@@ -263,32 +274,28 @@
                 if(data.status === "SUCCESS") {
                     currentVideoUrl = data.videoUrl;
                     
-                    logBox.innerText = `[SUCCESS] Movie Generation Complete!\n--------------------------------\nActive Module: ${chosenTool}\nResolution: ${data.resolution}\nAspect Framework: ${data.aspectRatio}\n\n[NOTICE] Press the native play symbol on the movie container directly to preview your loop creation!`;
+                    logBox.innerText = `[SUCCESS] Movie Generation Complete!\n--------------------------------\nActive Module: ${chosenTool}\nResolution: ${data.resolution}\nAspect Framework: ${data.aspectRatio}\n\n[INSTRUCTIONS] Use the download or share features below to distribute your file.`;
                     logBox.style.color = "#00ff66";
                     
-                    // DESTRUCTIVE CLEAN INJECTION: Wipes layout state completely 
+                    // CLEAR OLD DOM STATE ENTIRELY
                     targetBox.innerHTML = "";
                     
                     const videoEl = document.createElement('video');
                     videoEl.controls = true;
-                    videoEl.preload = 'auto';
-                    videoEl.loop = true;
-                    // UNMUTING BY DEFAULT FOR COMPLETED USER GENERATIONS
-                    videoEl.muted = false; 
+                    videoEl.preload = 'metadata';
                     
-                    // Strict sandboxing rules to block Safari's system breakouts
+                    // Enforce static sandbox configuration to prevent automatic PiP breakouts
                     videoEl.setAttribute('playsinline', 'true');
                     videoEl.setAttribute('webkit-playsinline', 'true');
                     videoEl.setAttribute('disablePictureInPicture', 'true');
+                    videoEl.setAttribute('controlsList', 'nodownload');
                     
                     videoEl.src = data.videoUrl;
                     targetBox.appendChild(videoEl);
                     
-                    // Set up action links
+                    // Assign targets
                     document.getElementById('downloadLink').href = data.videoUrl;
                     viewport.style.display = 'block';
-                    
-                    videoEl.load();
 
                 } else {
                     logBox.innerText = `Render Engine Error: ${data.error}`;
@@ -300,19 +307,17 @@
             }
         }
 
-        // Native Native Sharing functionality
         function shareMovieFile() {
             if (!currentVideoUrl) return;
             if (navigator.share) {
                 navigator.share({
-                    title: 'My OmniStudio Movie',
-                    text: 'Check out this awesome video movie I generated with AI!',
+                    title: 'My OmniStudio Generation',
+                    text: 'Take a look at the movie I generated using OmniStudio!',
                     url: currentVideoUrl
                 }).catch(console.error);
             } else {
-                // Fallback copying to clipboard
                 navigator.clipboard.writeText(currentVideoUrl);
-                alert("Movie link copied to clipboard! Share it with friends.");
+                alert("Movie link copied to clipboard! Share it anywhere.");
             }
         }
     </script>
