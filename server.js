@@ -12,6 +12,28 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+// NEW PIPELINE LAYER: Isolated view layout that fulfills mobile browser validation criteria
+app.get('/video-player', (req, res) => {
+    const videoUrl = req.query.url;
+    if (!videoUrl) return res.status(400).send('Missing media stream parameter.');
+
+    res.send(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <style>
+                body, html { margin:0; padding:0; width:100%; height:100%; background:#000; overflow:hidden; display:flex; align-items:center; justify-content:center; }
+                video { width:100%; height:100%; object-fit:cover; }
+            </style>
+        </head>
+        <body>
+            <video src="${htmlEscape(videoUrl)}" controls autoplay loop muted playsinline webkit-playsinline></video>
+        </body>
+        </html>
+    `);
+});
+
 app.post('/api/render-shot', async (req, res) => {
     try {
         const { scriptPrompt, activeTool } = req.body;
@@ -21,7 +43,6 @@ app.post('/api/render-shot', async (req, res) => {
             return res.status(400).json({ status: "ERROR", error: "Prompt is blank." });
         }
 
-        // Direct Google CDN assets that stream correctly under standard mobile web view policies
         const videoLibrary = [
             "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
             "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
@@ -42,6 +63,10 @@ app.post('/api/render-shot', async (req, res) => {
         return res.status(500).json({ status: "FAILED", error: err.message });
     }
 });
+
+function htmlEscape(str) {
+    return str.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
 
 app.listen(PORT, () => {
     console.log(`[ONLINE] OmniStudio Active. Port: ${PORT}`);
