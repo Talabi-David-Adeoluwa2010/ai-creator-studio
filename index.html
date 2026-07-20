@@ -101,7 +101,7 @@
         .preview-viewport-container {
             width: 100%; aspect-ratio: 16/9; background: #020305;
             border-radius: 10px; border: 1px solid var(--border-color);
-            margin-top: 15px; display: block; overflow: hidden; position: relative;
+            margin-top: 15px; display: none; overflow: hidden; position: relative;
         }
         video { width: 100%; height: 100%; object-fit: cover; background: #000000; display: block; }
         .viewport-badge {
@@ -111,6 +111,15 @@
             pointer-events: none;
         }
         
+        .action-tray {
+            display: flex; gap: 10px; margin-top: 15px;
+        }
+        .btn-secondary {
+            flex: 1; background: #1a2233; border: 1px solid var(--border-color);
+            color: #ffffff; padding: 12px; border-radius: 8px; font-weight: 600;
+            font-size: 13px; text-align: center; cursor: pointer; text-decoration: none;
+        }
+
         #outputLog {
             background: #030406; border: 1px solid #141822;
             font-family: monospace; padding: 15px; border-radius: 10px;
@@ -168,8 +177,13 @@
             <button id="renderBtn" onclick="dispatchRenderJob()">EXECUTE MASTER CINEMATIC RENDER</button>
             
             <div class="preview-viewport-container" id="videoViewportContainer">
-                <div class="viewport-badge">LIVE 4K MOVIE STREAM LAYER</div>
-                <video id="studioVideoPlayer" controls preload="auto" loop muted playsinline webkit-playsinline></video>
+                <div class="viewport-badge">GENERATED AI MOVIE</div>
+                <div id="videoContainer"></div>
+                
+                <div class="action-tray">
+                    <a id="downloadLink" class="btn-secondary" download="ai-movie.mp4" target="_blank">📥 Save Video</a>
+                    <div id="shareBtn" class="btn-secondary" onclick="shareMovieFile()">🔗 Share Movie</div>
+                </div>
             </div>
         </div>
 
@@ -185,6 +199,8 @@
     </div>
 
     <script>
+        let currentVideoUrl = "";
+
         window.addEventListener('DOMContentLoaded', () => {
             generateFloatingAssets();
             setTimeout(() => {
@@ -220,7 +236,8 @@
             const promptText = document.getElementById('promptInput').value;
             const chosenTool = document.getElementById('toolSelect').value;
             const logBox = document.getElementById('outputLog');
-            const container = document.getElementById('videoViewportContainer');
+            const viewport = document.getElementById('videoViewportContainer');
+            const targetBox = document.getElementById('videoContainer');
             
             if(!promptText) {
                 logBox.innerText = "Execution Denied: Scene prompt parameters cannot be null.";
@@ -244,37 +261,34 @@
                 const data = await response.json();
                 
                 if(data.status === "SUCCESS") {
-                    logBox.innerText = `[SUCCESS] Movie Generation Complete!\n--------------------------------\nActive Module: ${chosenTool}\nResolution: ${data.resolution}\nAspect Framework: ${data.aspectRatio}`;
+                    currentVideoUrl = data.videoUrl;
+                    
+                    logBox.innerText = `[SUCCESS] Movie Generation Complete!\n--------------------------------\nActive Module: ${chosenTool}\nResolution: ${data.resolution}\nAspect Framework: ${data.aspectRatio}\n\n[NOTICE] Press the native play symbol on the movie container directly to preview your loop creation!`;
                     logBox.style.color = "#00ff66";
                     
-                    // DESTRUCTIVE DOM REBUILD LAYER: Removes old instance completely to dodge the picture-in-picture loop bug
-                    const oldPlayer = document.getElementById('studioVideoPlayer');
-                    if (oldPlayer) { oldPlayer.remove(); }
+                    // DESTRUCTIVE CLEAN INJECTION: Wipes layout state completely 
+                    targetBox.innerHTML = "";
                     
-                    const newPlayer = document.createElement('video');
-                    newPlayer.id = 'studioVideoPlayer';
-                    newPlayer.controls = true;
-                    newPlayer.preload = 'auto';
-                    newPlayer.loop = true;
-                    newPlayer.muted = true;
+                    const videoEl = document.createElement('video');
+                    videoEl.controls = true;
+                    videoEl.preload = 'auto';
+                    videoEl.loop = true;
+                    // UNMUTING BY DEFAULT FOR COMPLETED USER GENERATIONS
+                    videoEl.muted = false; 
                     
-                    // Essential system attributes to enforce true inline execution
-                    newPlayer.setAttribute('playsinline', '');
-                    newPlayer.setAttribute('webkit-playsinline', '');
-                    newPlayer.setAttribute('disablePictureInPicture', '');
-                    newPlayer.setAttribute('controlsList', 'nodownload');
+                    // Strict sandboxing rules to block Safari's system breakouts
+                    videoEl.setAttribute('playsinline', 'true');
+                    videoEl.setAttribute('webkit-playsinline', 'true');
+                    videoEl.setAttribute('disablePictureInPicture', 'true');
                     
-                    newPlayer.src = data.videoUrl;
-                    container.appendChild(newPlayer);
+                    videoEl.src = data.videoUrl;
+                    targetBox.appendChild(videoEl);
                     
-                    newPlayer.load();
+                    // Set up action links
+                    document.getElementById('downloadLink').href = data.videoUrl;
+                    viewport.style.display = 'block';
                     
-                    // Trigger native playback inside a safe initialization queue
-                    setTimeout(() => {
-                        newPlayer.play().catch(e => {
-                            console.log("Safe auto-play fallback triggered.");
-                        });
-                    }, 50);
+                    videoEl.load();
 
                 } else {
                     logBox.innerText = `Render Engine Error: ${data.error}`;
@@ -283,6 +297,22 @@
             } catch (error) {
                 logBox.innerText = "Connection Delay: Server is waking up. Try again in 10 seconds!";
                 logBox.style.color = "#ffcc00";
+            }
+        }
+
+        // Native Native Sharing functionality
+        function shareMovieFile() {
+            if (!currentVideoUrl) return;
+            if (navigator.share) {
+                navigator.share({
+                    title: 'My OmniStudio Movie',
+                    text: 'Check out this awesome video movie I generated with AI!',
+                    url: currentVideoUrl
+                }).catch(console.error);
+            } else {
+                // Fallback copying to clipboard
+                navigator.clipboard.writeText(currentVideoUrl);
+                alert("Movie link copied to clipboard! Share it with friends.");
             }
         }
     </script>
