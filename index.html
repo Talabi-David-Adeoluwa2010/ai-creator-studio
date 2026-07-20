@@ -100,13 +100,14 @@
         .preview-viewport-container {
             width: 100%; aspect-ratio: 16/9; background: #020305;
             border-radius: 10px; border: 1px solid var(--border-color);
-            margin-top: 15px; display: block; overflow: hidden; position: relative;
+            margin-top: 15px; display: none; overflow: hidden; position: relative;
         }
-        video { width: 100%; height: 100%; object-fit: cover; background: #000000; display: block; }
+        iframe { width: 100%; height: 100%; border: none; background: #000000; display: block; }
         .viewport-badge {
             position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.8);
             padding: 4px 8px; border-radius: 4px; border: 1px solid var(--accent);
             color: var(--accent); font-size: 11px; font-family: monospace; z-index: 10;
+            pointer-events: none;
         }
         
         #outputLog {
@@ -166,8 +167,8 @@
             <button id="renderBtn" onclick="dispatchRenderJob()">EXECUTE MASTER CINEMATIC RENDER</button>
             
             <div class="preview-viewport-container" id="videoViewportContainer">
-                <div class="viewport-badge">LIVE 4K MOVIE STREAM LAYER</div>
-                <video id="studioVideoPlayer" controls preload="auto" loop muted playsinline webkit-playsinline disablePictureInPicture controlsList="nodownload noplaybackrate"></video>
+                <div class="viewport-badge">LIVE MOVIE STREAM LAYER</div>
+                <iframe id="studioVideoFrame" allow="autoplay; fullscreen"></iframe>
             </div>
         </div>
 
@@ -218,16 +219,14 @@
             const promptText = document.getElementById('promptInput').value;
             const chosenTool = document.getElementById('toolSelect').value;
             const logBox = document.getElementById('outputLog');
-            const player = document.getElementById('studioVideoPlayer');
+            const container = document.getElementById('videoViewportContainer');
+            const frame = document.getElementById('studioVideoFrame');
             
             if(!promptText) {
                 logBox.innerText = "Execution Denied: Scene prompt parameters cannot be null.";
                 logBox.style.color = "#ff3366";
                 return;
             }
-
-            // Immediately prime the video element inside user gesture block
-            player.play().catch(() => {});
 
             logBox.innerText = `[LOG] Transmitting parameters to core node...\n[LOG] Activating Module: ${chosenTool}\n[LOG] Compiling render sequence matrices...`;
             logBox.style.color = "#00ffcc";
@@ -248,14 +247,9 @@
                     logBox.innerText = `[SUCCESS] Movie Generation Complete!\n--------------------------------\nActive Module: ${chosenTool}\nResolution: ${data.resolution}\nAspect Framework: ${data.aspectRatio}`;
                     logBox.style.color = "#00ff66";
                     
-                    player.src = data.videoUrl;
-                    player.load();
-                    
-                    setTimeout(() => {
-                        player.play().catch(e => {
-                            console.log("Muted autoplay initialized safely.");
-                        });
-                    }, 200);
+                    // Route to the new isolated embed engine
+                    frame.src = `/video-player?url=${encodeURIComponent(data.videoUrl)}`;
+                    container.style.display = 'block';
 
                 } else {
                     logBox.innerText = `Render Engine Error: ${data.error}`;
