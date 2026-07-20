@@ -21,7 +21,7 @@ app.post('/api/render-shot', async (req, res) => {
             return res.status(400).json({ status: "ERROR", error: "Prompt is blank." });
         }
 
-        // Optimized CDN production assets that work natively on iOS and Android devices
+        // Direct Google CDN assets that stream correctly under standard mobile web view policies
         const videoLibrary = [
             "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
             "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
