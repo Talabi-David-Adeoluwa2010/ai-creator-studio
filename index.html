@@ -102,7 +102,8 @@
             border-radius: 10px; border: 1px solid var(--border-color);
             margin-top: 15px; display: none; overflow: hidden; position: relative;
         }
-        video { width: 100%; height: 100%; object-fit: cover; }
+        /* CRITICAL: Ensure player fits perfectly and responds to touches */
+        video { width: 100%; height: 100%; object-fit: cover; background: #000; display: block; }
         .viewport-badge {
             position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.8);
             padding: 4px 8px; border-radius: 4px; border: 1px solid var(--accent);
@@ -143,7 +144,7 @@
 
         <div class="card">
             <label for="promptInput">1. Scene Physics & Vision Script</label>
-            <textarea id="promptInput" placeholder="Enter script direction... (e.g., Space shuttle flying through a beautiful glowing nebula cluster)"></textarea>
+            <textarea id="promptInput" placeholder="Enter script direction..."></textarea>
             
             <label for="toolSelect">Active Studio Module Selection</label>
             <select id="toolSelect">
@@ -166,7 +167,7 @@
             
             <div class="preview-viewport-container" id="videoViewportContainer">
                 <div class="viewport-badge">LIVE 4K MOVIE STREAM LAYER</div>
-                <video id="studioVideoPlayer" controls autoplay loop muted playsinline></video>
+                <video id="studioVideoPlayer" autoplay loop muted playsinline controls preload="auto"></video>
             </div>
         </div>
 
@@ -209,14 +210,7 @@
             const file = input.files[0];
             const statusLabel = document.getElementById('uploadStatus');
             if(!file) return;
-
-            const MAX_SIZE_BYTES = 2 * 1024 * 1024 * 1024; 
-            if(file.size > MAX_SIZE_BYTES) {
-                alert("Buffer Overflow: Ingested file asset size exceeds the premium 2GB limit.");
-                input.value = "";
-                return;
-            }
-            statusLabel.innerText = `Ingested: ${file.name} (${(file.size / (1024*1024)).toFixed(1)} MB)`;
+            statusLabel.innerText = `Ingested: ${file.name}`;
             statusLabel.style.color = "#00ffcc";
         }
 
@@ -233,7 +227,7 @@
                 return;
             }
 
-            logBox.innerText = `[LOG] Connecting to engine at /api/render-shot...\n[LOG] Activating Module: ${chosenTool}\n[LOG] Please wait up to 30 seconds if the server is waking up...`;
+            logBox.innerText = `[LOG] Transmitting parameters to core node...\n[LOG] Activating Module: ${chosenTool}\n[LOG] Compiling render sequence matrices...`;
             logBox.style.color = "#00ffcc";
             container.style.display = "none";
 
@@ -249,19 +243,29 @@
                 
                 const data = await response.json();
                 
-                if(data.status === "SUCCESS" || response.ok) {
-                    logBox.innerText = `[SUCCESS] Movie Generation Complete!\n--------------------------------\nActive Module Layered: ${chosenTool}\nResolution Output: ${data.resolution || '4K Master'}\nAspect Framework: ${data.aspectRatio || '16:9'}\nAudio Continuity: ${data.audioSync || 'Locked'}`;
+                if(data.status === "SUCCESS") {
+                    logBox.innerText = `[SUCCESS] Movie Generation Complete!\n--------------------------------\nActive Module: ${chosenTool}\nResolution: ${data.resolution}\nAspect Framework: ${data.aspectRatio}`;
                     logBox.style.color = "#00ff66";
                     
+                    // Assign the video URL and explicitly call methods to unlock mobile playback engines
                     player.src = data.videoUrl;
                     container.style.display = "block";
-                    player.play().catch(e => console.log("Autoplay caught:", e));
+                    player.load();
+                    
+                    // Programmatic trigger to clear mobile hardware blocks
+                    let playPromise = player.play();
+                    if (playPromise !== undefined) {
+                        playPromise.catch(error => {
+                            console.log("Auto-play prevented by device settings. User can touch manually.", error);
+                            logBox.innerText += "\n\n[NOTICE] Mobile device requested physical verification. Tap the play button directly in the player window above!";
+                        });
+                    }
                 } else {
-                    logBox.innerText = `Render Engine Error: ${data.error || 'Server responded with an issue.'}`;
+                    logBox.innerText = `Render Engine Error: ${data.error}`;
                     logBox.style.color = "#ff3366";
                 }
             } catch (error) {
-                logBox.innerText = "Connection Delay: The cloud host is waking up or compiling code.\n\nACTION: Please wait 15 seconds and tap the button again!";
+                logBox.innerText = "Connection Delay: Server is waking up. Try again in 10 seconds!";
                 logBox.style.color = "#ffcc00";
             }
         }
