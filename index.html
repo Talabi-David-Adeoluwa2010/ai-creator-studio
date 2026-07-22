@@ -98,7 +98,6 @@
             -webkit-tap-highlight-color: transparent;
         }
         
-        /* FIXED WRAPPER CONTAINER: Removed strict height capping to make action elements visible */
         .preview-viewport-container {
             width: 100%; background: #020305;
             border-radius: 12px; border: 1px solid var(--border-color);
@@ -118,7 +117,6 @@
             pointer-events: none;
         }
         
-        /* ACTION TRAYS: Visible directly beneath the player view */
         .action-tray {
             display: flex; gap: 10px; width: 100%; box-sizing: border-box;
         }
@@ -188,11 +186,10 @@
             <div class="preview-viewport-container" id="videoViewportContainer">
                 <div class="viewport-badge">GENERATED AI MOVIE</div>
                 
-                <div class="video-box" id="videoContainer">
-                    </div>
+                <div class="video-box" id="videoContainer"></div>
                 
                 <div class="action-tray">
-                    <a id="downloadLink" class="btn-secondary" download="ai-movie.mp4" target="_blank">📥 Download Video</a>
+                    <a id="downloadLink" class="btn-secondary" target="_blank">📥 Download Video</a>
                     <div id="shareBtn" class="btn-secondary" onclick="shareMovieFile()">🔗 Share Movie</div>
                 </div>
             </div>
@@ -272,29 +269,27 @@
                 const data = await response.json();
                 
                 if(data.status === "SUCCESS") {
-                    currentVideoUrl = data.videoUrl;
+                    currentVideoUrl = window.location.origin + data.videoUrl;
                     
                     logBox.innerText = `[SUCCESS] Movie Generation Complete!\n--------------------------------\nActive Module: ${chosenTool}\nResolution: ${data.resolution}\nAspect Framework: ${data.aspectRatio}\n\n[INSTRUCTIONS] Use the download or share features below to distribute your file.`;
                     logBox.style.color = "#00ff66";
                     
-                    // CLEAR OLD DOM STATE ENTIRELY
+                    // Clear old player DOM
                     targetBox.innerHTML = "";
                     
                     const videoEl = document.createElement('video');
                     videoEl.controls = true;
-                    videoEl.preload = 'metadata';
+                    videoEl.preload = 'auto';
                     
-                    // Enforce static sandbox configuration to prevent automatic PiP breakouts
+                    // iOS inline constraints
                     videoEl.setAttribute('playsinline', 'true');
                     videoEl.setAttribute('webkit-playsinline', 'true');
-                    videoEl.setAttribute('disablePictureInPicture', 'true');
-                    videoEl.setAttribute('controlsList', 'nodownload');
                     
                     videoEl.src = data.videoUrl;
                     targetBox.appendChild(videoEl);
                     
-                    // Assign targets
-                    document.getElementById('downloadLink').href = data.videoUrl;
+                    // Binds the new server-side proxy route for seamless mobile downloads
+                    document.getElementById('downloadLink').href = data.downloadUrl || data.videoUrl;
                     viewport.style.display = 'block';
 
                 } else {
